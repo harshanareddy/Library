@@ -1,11 +1,12 @@
 const booksContainer = document.querySelector('.books-container');
-const formEl = document.createElement('form');
+const formContainer = document.querySelector('.form-container');
+
 const btn = document.querySelector('button');
 
 const booksStorage = [];
 
 
-function Book(title, author, pages, genre, subGenre, publishedDate, isAvailable, copyType){
+function Book(title, author, pages, genre, subGenre, publishedDate, hadReadBook, copyType){
     this.id = crypto.randomUUID();
     this.title = title;
     this.author = author;
@@ -13,12 +14,12 @@ function Book(title, author, pages, genre, subGenre, publishedDate, isAvailable,
     this.genre = genre;
     this.subGenre = subGenre;
     this.publishedDate = publishedDate;
-    this.isAvailable = isAvailable;
+    this.hadReadBook = hadReadBook;
     this.copyType = copyType;
 }
 
 Book.prototype.changeReadStatus = function(){
-    this.isAvailable = !this.isAvailable;
+    this.hadReadBook = !this.hadReadBook;
 }
 
 function addBookToStorage(){
@@ -55,18 +56,22 @@ for(let book of booksStorage){
     bookEl.classList.add('book-El');
     bookEl.setAttribute('data-id', book.id);
 
-    bookEl.textContent = `${book.title}, ${book.author}`;
+    const titleEl = document.createElement('h3');
+    const authorEl = document.createElement('h4');
+
+    titleEl.textContent = book.title;
+    authorEl.textContent = book.author;
+    
+    // bookEl.textContent = `${book.title}, ${book.author}`;
 
     const removeBtn = document.createElement('button');
-    removeBtn.classList.add('remove-btn');
+    removeBtn.classList.add('remove-button');
     removeBtn.textContent = "Remove";
 
     const readBtn = document.createElement('button');
     readBtn.classList.add('read-button');
-    readBtn.textContent = book.isAvailable ? "Unread" : "Read";
-    readBtn.style.background = book.isAvailable ? "Green" : "Grey";
-    readBtn.style.border = "1px solid white";
-    readBtn.style.color = "white";
+    readBtn.textContent = book.hadReadBook ? "Completed Reading" : "Want to Read";
+    readBtn.classList.add(book.hadReadBook ? 'had-read-the-book': 'not-read-the-book');
     
     removeBtn.addEventListener('click', () => {
         const idOfTheBook = bookEl.getAttribute('data-id');
@@ -75,13 +80,17 @@ for(let book of booksStorage){
 
     readBtn.addEventListener("click", () => {
         book.changeReadStatus();
-        readBtn.textContent = book.isAvailable ? "Unread" : "Read";
-        readBtn.style.background = book.isAvailable ? "Green" : "Grey";
-        readBtn.style.border = "1px solid white";
-        readBtn.style.color = "white";
+        readBtn.textContent = book.hadReadBook ? "Completed Reading" : "Want to Read";
+
+        readBtn.classList.remove('had-read-the-book', 'not-read-the-book');
+
+        readBtn.classList.add( book.hadReadBook ? 'had-read-the-book': 'not-read-the-book');
+
     });
 
     booksContainer.appendChild(bookEl);
+    bookEl.appendChild(titleEl);
+    bookEl.appendChild(authorEl);
     bookEl.appendChild(removeBtn);
     bookEl.appendChild(readBtn);
 }
@@ -89,7 +98,11 @@ for(let book of booksStorage){
 
 
 btn.addEventListener('click', () => {
-    
+
+    formContainer.innerHTML = "";
+
+    const formEl = document.createElement('form');
+
     const authorInput = document.createElement('input');
     authorInput.type = "text";
     authorInput.placeholder = "Enter Author name:";
@@ -119,12 +132,14 @@ btn.addEventListener('click', () => {
     formEl.appendChild(pagesInput);
     formEl.appendChild(submitBtn);
 
-    document.body.appendChild(formEl);
+    formContainer.appendChild(formEl);
 });
 
 formEl.addEventListener('submit', (event) => {
 
     event.preventDefault();
+
+
 
     const author = formEl.elements['author'].value;
     const title = formEl.elements['title'].value;
