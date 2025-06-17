@@ -1,0 +1,15 @@
+.books-container{
+    display: flex;
+
+}
+
+.book-El{
+    width: 150px;
+    height: 200px;
+}
+
+.new-book{
+    margin: 0 auto;
+    display: block;
+    cursor: pointer;
+}
